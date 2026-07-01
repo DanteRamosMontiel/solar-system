@@ -8,8 +8,8 @@ export function createDirectionalLight(scene, color, intensity){
     return dl;
 }
 
-export function createPointLight(scene, color, intensity){
-    const pl = new THREE.PointLight(color, intensity);
+export function createPointLight(scene, color, intensity, distance, decay){
+    const pl = new THREE.PointLight(color, intensity, distance, decay);
 
     scene.add(pl);
 
