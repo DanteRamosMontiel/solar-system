@@ -63,7 +63,7 @@ export function createStandardRing(scene, texture, innerRadius, outerRadius, the
 export function createStandardOrbitalRing(scene, color, innerRadius, outerRadius, thetaSegments) {
     const ringGeo = new THREE.RingGeometry(innerRadius, outerRadius, thetaSegments);
 
-    const ringMat = new THREE.MeshStandardMaterial({color: new THREE.Color(color), side: THREE.DoubleSide, transparent: true, depthWrite: false });
+    const ringMat = new THREE.MeshStandardMaterial({ color: new THREE.Color(color), side: THREE.DoubleSide, transparent: true, depthWrite: false });
 
     const ring = new THREE.Mesh(ringGeo, ringMat);
 
@@ -72,14 +72,29 @@ export function createStandardOrbitalRing(scene, color, innerRadius, outerRadius
     return ring;
 }
 
-export function createBasicOrbitalRing(scene, color, radius, tubeRadius, radialSegments, tubularSegments){
+export function createBasicOrbitalRing(scene, color, radius, tubeRadius, radialSegments, tubularSegments) {
     const rinGeo = new THREE.TorusGeometry(radius, tubeRadius, radialSegments, tubularSegments);
 
-    const ringMat = new THREE.MeshBasicMaterial({color: new THREE.Color(color), transparent: true, depthWrite: false, opacity: 0.25 });
+    const ringMat = new THREE.MeshBasicMaterial({ color: new THREE.Color(color), transparent: true, depthWrite: false, opacity: 0.25 });
 
     const ring = new THREE.Mesh(rinGeo, ringMat);
 
     scene.add(ring);
 
     return ring;
+}
+
+export function createBackgroundSphere(scene, texture) {
+    const geometry = new THREE.SphereGeometry(2000, 64, 64);
+
+    const material = new THREE.MeshBasicMaterial({
+        map: texture,
+        side: THREE.BackSide
+    });
+
+    const background = new THREE.Mesh(geometry, material);
+
+    scene.add(background);
+
+    return background
 }

@@ -2,7 +2,7 @@ import * as THREE from "three";
 import { OrbitControls } from "jsm/controls/OrbitControls.js";
 import { createScene } from "./scene.js";
 import { createPointLight, createAmbientLight } from "./lights.js";
-import { createBasicSphere, createStandardSphere, createStandardRing, createStandardOrbitalRing, createBasicOrbitalRing } from "./objects.js";
+import { createBasicSphere, createStandardSphere, createStandardRing, createStandardOrbitalRing, createBasicOrbitalRing, createBackgroundSphere } from "./objects.js";
 import { createControl } from "./controls.js";
 
 //Dimensions
@@ -45,17 +45,18 @@ const saturnTexture = textureLoader.load("./public/textures/saturn.jpg");
 const saturnRingTexture = textureLoader.load("./public/textures/saturn_ring.png");
 const uranusTexture = textureLoader.load("./public/textures/uranus.jpg");
 const venusTexture = textureLoader.load("./public/textures/venus.jpg");
-textureLoader.load("./public/textures/milky_way.jpg", (texture) => {
+const backgroundTexture = textureLoader.load("./public/textures/milky_way.jpg", (texture) => {
     texture.mapping = THREE.EquirectangularReflectionMapping;
-    texture.colorSpace = THREE.SRGBColorSpace;
-
-    scene.background = texture;
+    texture.colorSpace = THREE.SRGBColorSpace
 });
 
 saturnRingTexture.wrapS = THREE.ClampToEdgeWrapping;
 saturnRingTexture.wrapT = THREE.ClampToEdgeWrapping;
 saturnRingTexture.colorSpace = THREE.SRGBColorSpace;
 saturnRingTexture.anisotropy = renderer.capabilities.getMaxAnisotropy();
+
+//Sphere for background
+const background = createBackgroundSphere(scene, backgroundTexture);
 
 
 /*************************************************************/
@@ -170,6 +171,7 @@ function animate() {
         p.object.rotation.y += p.orbitSpeed * timeScale / 4;
     });
     moonPivot.rotation.y += 0.04 * timeScale;
+    background.rotation.y += 0.0002 + timeScale * 0.00001;
     controls.update();
     renderer.render(scene, camera);
 }
