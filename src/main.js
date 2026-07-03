@@ -68,7 +68,9 @@ const background = createBackgroundSphere(scene, backgroundTexture);
 createRandomStars(scene);
 
 //Create asteroids ring (between mars an jupiter)
-createAsteroidsRing(scene, moonTexture, 560, 870);
+const asteroidsRingPivot = new THREE.Object3D();
+scene.add(asteroidsRingPivot);
+createAsteroidsRing(asteroidsRingPivot, moonTexture, 560, 870);
 
 //Planets values
 const PLANETS_VALUES = [
@@ -186,6 +188,7 @@ function animate() {
      });
     moonPivot.rotation.y += 0.04 * timeScale;
     background.rotation.y += 0.0002 + timeScale * 0.00001;
+    asteroidsRingPivot.rotation.y += 0.0001 * timeScale;
     controls.update();
     renderer.render(scene, camera);
 }
