@@ -2,7 +2,7 @@ import * as THREE from "three";
 import { OrbitControls } from "jsm/controls/OrbitControls.js";
 import { createScene } from "./scene.js";
 import { createPointLight, createAmbientLight } from "./lights.js";
-import { createBasicSphere, createStandardSphere, createStandardRing, createStandardOrbitalRing, createBasicOrbitalRing, createBackgroundSphere } from "./objects.js";
+import { createRandomStars, createAsteroidsRing, createBasicSphere, createStandardSphere, createStandardRing, createStandardOrbitalRing, createBasicOrbitalRing, createBackgroundSphere } from "./objects.js";
 import { createControl } from "./controls.js";
 
 
@@ -64,6 +64,12 @@ const background = createBackgroundSphere(scene, backgroundTexture);
 /******************* SOLAR SYSTEM & PLANETS ******************/
 /*************************************************************/
 
+//Create random stars
+createRandomStars(scene);
+
+//Create asteroids ring (between mars an jupiter)
+createAsteroidsRing(scene, moonTexture, 560, 870);
+
 //Planets values
 const PLANETS_VALUES = [
     { name: "Mercury", radius: 12, distance: 90, texture: mercuryTexture, orbitSpeed: 0.020, rotationSpeed: 0.0040 },
@@ -89,7 +95,7 @@ PLANETS[0] = { object: sunSphere, orbitSpeed: 0.000, rotationSpeed: 0.001 };
 const PIVOTS = new Array(PLANETS.length - 1);
 for (let i = 0; i < PIVOTS.length; i++) {
     PIVOTS[i] = { object: new THREE.Object3D(), orbitSpeed: PLANETS_VALUES[i].orbitSpeed }
-    //PIVOTS[i].object.rotation.y = Math.random() * Math.PI * 2;
+    PIVOTS[i].object.rotation.y = Math.random() * Math.PI * 2;
     scene.add(PIVOTS[i].object);
 }
 

@@ -124,3 +124,106 @@ export function createBackgroundSphere(scene, texture) {
 
     return background
 }
+
+export function createRandomStars(scene) {
+
+    const geometry = new THREE.BufferGeometry();
+
+    const positions = [];
+
+    for (let i = 0; i < 5000; i++) {
+
+        // Dirección aleatoria
+        const direction = new THREE.Vector3(
+            Math.random() * 2 - 1,
+            Math.random() * 2 - 1,
+            Math.random() * 2 - 1
+        ).normalize();
+
+        // Distancia al origen
+        const distance = THREE.MathUtils.randFloat(3000, 3900);
+
+        direction.multiplyScalar(distance);
+
+        positions.push(
+            direction.x,
+            direction.y,
+            direction.z
+        );
+    }
+
+    geometry.setAttribute(
+        "position",
+        new THREE.Float32BufferAttribute(positions, 3)
+    );
+
+    const material = new THREE.PointsMaterial({
+        color: 0xffffff,
+        size: 2,
+        sizeAttenuation: true,
+        opacity: 0.2
+    });
+
+    const stars = new THREE.Points(geometry, material);
+    scene.add(stars);
+}
+
+export function createAsteroidsRing(scene, texture, innerRadius, outerRadius) {
+
+    const asteroidCount = 4000;
+
+    // Una geometría sencilla que parece una roca
+    const geometry = new THREE.IcosahedronGeometry(7, 0);
+
+    const material = new THREE.MeshStandardMaterial({
+        //color: 0x6f6f6f,
+        map: texture,
+        roughness: 1,
+        metalness: 0
+    });
+
+    const asteroids = new THREE.InstancedMesh(
+        geometry,
+        material,
+        asteroidCount
+    );
+
+    const dummy = new THREE.Object3D();
+
+    for (let i = 0; i < asteroidCount; i++) {
+
+        // Ángulo alrededor del Sol
+        const angle = Math.random() * Math.PI * 2;
+
+        // Radio del cinturón
+        const radius = THREE.MathUtils.randFloat(innerRadius, outerRadius);
+
+        // Espesor vertical
+        const y = THREE.MathUtils.randFloat(-20, 20);
+
+        const x = Math.cos(angle) * radius;
+        const z = Math.sin(angle) * radius;
+
+        dummy.position.set(x, y, z);
+
+        dummy.rotation.set(
+            Math.random() * Math.PI,
+            Math.random() * Math.PI,
+            Math.random() * Math.PI
+        );
+
+        const scale = THREE.MathUtils.randFloat(0.2, 0.8);
+
+        dummy.scale.setScalar(scale);
+
+        dummy.updateMatrix();
+
+        asteroids.setMatrixAt(i, dummy.matrix);
+    }
+
+    asteroids.instanceMatrix.needsUpdate = true;
+
+    scene.add(asteroids);
+
+    return asteroids;
+}
