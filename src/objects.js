@@ -1,4 +1,7 @@
 import * as THREE from "three";
+import { Line2 } from "jsm/lines/Line2.js";
+import { LineMaterial } from "jsm/lines/LineMaterial.js";
+import { LineGeometry } from "jsm/lines/LineGeometry.js";
 
 export function createBasicSphere(scene, texture, radius, widthSegments, heightSegments) {
     const sphrGeo = new THREE.SphereGeometry(radius, widthSegments, heightSegments);
@@ -72,12 +75,35 @@ export function createStandardOrbitalRing(scene, color, innerRadius, outerRadius
     return ring;
 }
 
-export function createBasicOrbitalRing(scene, color, radius, tubeRadius, radialSegments, tubularSegments) {
-    const rinGeo = new THREE.TorusGeometry(radius, tubeRadius, radialSegments, tubularSegments);
+export function createBasicOrbitalRing(scene, color, radius) {
 
-    const ringMat = new THREE.MeshBasicMaterial({ color: new THREE.Color(color), transparent: true, depthWrite: false, opacity: 0.25 });
+    const points = [];
 
-    const ring = new THREE.Mesh(rinGeo, ringMat);
+    for (let i = 0; i <= 360; i++) {
+        const angle = THREE.MathUtils.degToRad(i);
+
+        points.push(
+            Math.cos(angle) * radius,
+            0,
+            Math.sin(angle) * radius
+        );
+    }
+
+    const geometry = new LineGeometry();
+    geometry.setPositions(points);
+
+    const material = new LineMaterial({
+        color,
+        linewidth: 2, // píxeles
+        transparent: true,
+        opacity: 0.25,
+        depthWrite: false,
+    });
+
+    material.resolution.set(window.innerWidth, window.innerHeight);
+
+    const ring = new Line2(geometry, material);
+    ring.computeLineDistances();
 
     scene.add(ring);
 
@@ -85,7 +111,7 @@ export function createBasicOrbitalRing(scene, color, radius, tubeRadius, radialS
 }
 
 export function createBackgroundSphere(scene, texture) {
-    const geometry = new THREE.SphereGeometry(2000, 64, 64);
+    const geometry = new THREE.SphereGeometry(4000, 64, 64);
 
     const material = new THREE.MeshBasicMaterial({
         map: texture,
