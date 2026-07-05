@@ -94,7 +94,7 @@ export function createBasicOrbitalRing(scene, color, radius) {
 
     const material = new LineMaterial({
         color,
-        linewidth: 2, // píxeles
+        linewidth: 1, // píxeles
         transparent: true,
         opacity: 0.25,
         depthWrite: false,

@@ -1,9 +1,12 @@
 import * as THREE from "three";
 import { OrbitControls } from "jsm/controls/OrbitControls.js";
 import { createScene } from "./scene.js";
-import { createPointLight, createAmbientLight } from "./lights.js";
+import { createPointLight, createAmbientLight, createLensFlare } from "./lights.js";
 import { createRandomStars, createAsteroidsRing, createBasicSphere, createStandardSphere, createStandardRing, createStandardOrbitalRing, createBasicOrbitalRing, createBackgroundSphere } from "./objects.js";
 import { createControl } from "./controls.js";
+import { EffectComposer } from "jsm/postprocessing/EffectComposer.js";
+import { RenderPass } from "jsm/postprocessing/RenderPass.js";
+import { UnrealBloomPass } from "jsm/postprocessing/UnrealBloomPass.js";
 
 
 //Dimensions
@@ -22,6 +25,21 @@ camera.lookAt(0, 0, 0);
 
 //Scene
 const scene = createScene(0x000000);
+
+//Composer (for blooming)
+const composer = new EffectComposer(renderer);
+
+const renderPass = new RenderPass(scene, camera);
+composer.addPass(renderPass);
+
+const bloomPass = new UnrealBloomPass(
+    new THREE.Vector2(window.innerWidth, window.innerHeight),
+    1.2, // strength
+    0.35, // radius
+    0.86  // threshold
+);
+
+composer.addPass(bloomPass);
 
 //Lights
 const pointLight = createPointLight(scene, 0xFFFFFF, 500, 0, 0.9);
@@ -55,6 +73,8 @@ saturnRingTexture.wrapS = THREE.ClampToEdgeWrapping;
 saturnRingTexture.wrapT = THREE.ClampToEdgeWrapping;
 saturnRingTexture.colorSpace = THREE.SRGBColorSpace;
 saturnRingTexture.anisotropy = renderer.capabilities.getMaxAnisotropy();
+
+createLensFlare(pointLight);
 
 //Sphere for background
 const background = createBackgroundSphere(scene, backgroundTexture);
@@ -143,6 +163,8 @@ ORBITAL_RINGS[0].position.z = 18;
 ORBITAL_RINGS[1].position.x = -5;
 ORBITAL_RINGS[3].position.x = -30;
 
+ORBITAL_RINGS[2].opacity = 0;
+
 
 
 /*************************************************************/
@@ -166,6 +188,7 @@ window.addEventListener("resize", () => {
     camera.updateProjectionMatrix();
     renderer.setSize(window.innerWidth, window.innerHeight);
     material.resolution.set(window.innerWidth, window.innerHeight);
+    composer.setSize(window.innerWidth, window.innerHeight);
 });
 
 //V = velocity
@@ -190,7 +213,7 @@ function animate() {
     background.rotation.y += 0.0002 + timeScale * 0.00001;
     asteroidsRingPivot.rotation.y += 0.0001 * timeScale;
     controls.update();
-    renderer.render(scene, camera);
+    composer.render();
 }
 
 animate();
