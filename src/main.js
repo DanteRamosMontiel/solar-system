@@ -19,7 +19,7 @@ const renderer = new THREE.WebGLRenderer({ antialias: true });
 renderer.setSize(w, h)
 document.body.appendChild(renderer.domElement);
 
-//Label Renderer (para los nombres de los planetas)
+//Label Renderer (for planets names)
 const labelRenderer = new CSS2DRenderer();
 labelRenderer.setSize(w, h);
 labelRenderer.domElement.style.position = "absolute";
@@ -27,7 +27,7 @@ labelRenderer.domElement.style.top = "0px";
 labelRenderer.domElement.style.pointerEvents = "none";
 document.body.appendChild(labelRenderer.domElement);
 
-//Helper para crear una etiqueta de texto (nombre de planeta)
+//Function to create labels
 function createPlanetLabel(text) {
     const div = document.createElement("div");
     div.className = "planet-label";
@@ -36,9 +36,9 @@ function createPlanetLabel(text) {
     return new CSS2DObject(div);
 }
 
-//Para el chequeo de oclusión (ocultar labels tapados por un planeta)
+//To check if labels must be hidden
 const raycaster = new THREE.Raycaster();
-const labelEntries = []; // { label, mesh }
+const labelEntries = []; //{label, mesh}
 
 //Camera
 const camera = new THREE.PerspectiveCamera(90, w / h, 0.1, 8000);
@@ -56,9 +56,9 @@ composer.addPass(renderPass);
 
 const bloomPass = new UnrealBloomPass(
     new THREE.Vector2(window.innerWidth, window.innerHeight),
-    1.2, // strength
-    0.35, // radius
-    0.86  // threshold
+    1.2, //strength
+    0.35, //radius
+    0.86  //threshold
 );
 
 composer.addPass(bloomPass);
@@ -244,7 +244,7 @@ window.addEventListener("resize", () => {
     labelRenderer.setSize(window.innerWidth, window.innerHeight);
 });
 
-//V = velocity
+//Slider 
 let timeScale = 1;
 const slider = document.querySelector("#slider");
 const speedValue = document.querySelector("#speed-value");
@@ -264,7 +264,7 @@ slider.addEventListener("input", () => {
     speedValue.textContent = formatSpeed(timeScale);
 });
 
-//Zoom in/out buttons (mueven la cámara sobre su propio eje respetando los límites de OrbitControls)
+//Zoom in/out buttons
 const zoomInBtn = document.querySelector("#zoom-in");
 const zoomOutBtn = document.querySelector("#zoom-out");
 const zoomDirection = new THREE.Vector3();
