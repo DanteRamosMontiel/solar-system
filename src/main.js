@@ -73,8 +73,29 @@ const AmbientLight = createAmbientLight(scene, 0xFFFFFF, .3);
 /************************** TEXTURES *************************/
 /*************************************************************/
 
+//Loading screen
+const loadingScreen = document.querySelector("#loading-screen");
+const loadingBarFill = document.querySelector("#loading-bar-fill");
+const loadingPercent = document.querySelector("#loading-percent");
+
+const loadingManager = new THREE.LoadingManager();
+
+loadingManager.onProgress = (url, itemsLoaded, itemsTotal) => {
+    const pct = Math.round((itemsLoaded / itemsTotal) * 100);
+    loadingBarFill.style.width = pct + "%";
+    loadingPercent.textContent = pct + "%";
+};
+
+loadingManager.onLoad = () => {
+    loadingBarFill.style.width = "100%";
+    loadingPercent.textContent = "100%";
+    setTimeout(() => {
+        loadingScreen.classList.add("loaded");
+    }, 300);
+};
+
 //Texture Loaders
-const textureLoader = new THREE.TextureLoader();
+const textureLoader = new THREE.TextureLoader(loadingManager);
 const sunTexture = textureLoader.load("./public/textures/sun.jpg")
 const earthTexture = textureLoader.load("./public/textures/earth.jpg");
 const jupiterTexture = textureLoader.load("./public/textures/jupiter.jpg");
@@ -243,7 +264,7 @@ slider.addEventListener("input", () => {
     speedValue.textContent = formatSpeed(timeScale);
 });
 
-//Zoom in/out buttons
+//Zoom in/out buttons (mueven la cámara sobre su propio eje respetando los límites de OrbitControls)
 const zoomInBtn = document.querySelector("#zoom-in");
 const zoomOutBtn = document.querySelector("#zoom-out");
 const zoomDirection = new THREE.Vector3();

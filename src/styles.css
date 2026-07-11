@@ -58,7 +58,7 @@
 .control-label{
     font-family:"Orbitron", sans-serif;
     font-weight:500;
-    font-size:13px;
+    font-size:11px;
     letter-spacing:.12em;
     text-transform:uppercase;
     color:rgba(212,236,255,.55);
@@ -179,7 +179,7 @@
 
     font-family:"Orbitron", sans-serif;
     font-weight:600;
-    font-size:14px;
+    font-size:16px;
     line-height:1;
     color:#d4ecff;
 
@@ -207,6 +207,116 @@
 .zoom-btn:focus-visible{
     outline:2px solid #8fd0ff;
     outline-offset:2px;
+}
+
+/* LOADING SCREEN */
+#loading-screen{
+    position:fixed;
+    inset:0;
+    z-index:1000;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    background:radial-gradient(ellipse at center, #0a1220 0%, #030509 70%, #000000 100%);
+
+    transition:opacity .6s ease;
+}
+
+#loading-screen.loaded{
+    opacity:0;
+    pointer-events:none;
+}
+
+.loading-content{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:26px;
+}
+
+.loading-orbit{
+    position:relative;
+    width:72px;
+    height:72px;
+    border:1px solid rgba(255,255,255,.1);
+    border-radius:50%;
+    animation:orbit-spin 1.6s linear infinite;
+}
+
+.loading-orbit::after{
+    content:"";
+    position:absolute;
+    top:50%;
+    left:50%;
+    width:18px;
+    height:18px;
+    margin:-9px;
+    border-radius:50%;
+    background:radial-gradient(circle at 35% 35%, #fff, #ffcf7a 45%, #ff8a3c 85%);
+    box-shadow:
+        0 0 10px rgba(255,179,71,.8),
+        0 0 24px rgba(255,138,60,.5);
+}
+
+.loading-planet{
+    position:absolute;
+    top:-6px;
+    left:50%;
+    width:12px;
+    height:12px;
+    margin-left:-6px;
+    border-radius:50%;
+    background:radial-gradient(circle at 35% 35%, #fff, #8fd0ff 45%, #4f7cff 85%);
+    box-shadow:
+        0 0 8px #4f7cff,
+        0 0 18px #4f7cff,
+        0 0 30px #00d4ff55;
+}
+
+@keyframes orbit-spin{
+    to{ transform:rotate(360deg); }
+}
+
+.loading-title{
+    font-family:"Orbitron", sans-serif;
+    font-weight:700;
+    font-size:clamp(18px, 2.4vw, 24px);
+    letter-spacing:.3em;
+    text-transform:uppercase;
+    color:#d4ecff;
+    text-shadow:0 0 20px rgba(79,124,255,.5);
+}
+
+.loading-bar-track{
+    width:220px;
+    height:4px;
+
+    background:rgba(255,255,255,.08);
+    border:1px solid rgba(255,255,255,.12);
+    border-radius:999px;
+
+    overflow:hidden;
+}
+
+.loading-bar-fill{
+    height:100%;
+    width:0%;
+
+    background:linear-gradient(90deg, #00d4ff, #4f7cff, #8a5cff);
+    border-radius:999px;
+
+    transition:width .25s ease;
+}
+
+.loading-percent{
+    font-family:"Orbitron", sans-serif;
+    font-weight:500;
+    font-size:12px;
+    letter-spacing:.1em;
+    color:rgba(212,236,255,.55);
+    font-variant-numeric:tabular-nums;
 }
 
 @media (max-width: 480px){
