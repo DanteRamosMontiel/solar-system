@@ -226,11 +226,44 @@ window.addEventListener("resize", () => {
 //V = velocity
 let timeScale = 1;
 const slider = document.querySelector("#slider");
+const speedValue = document.querySelector("#speed-value");
+
+function formatSpeed(value) {
+    if (value < 0.001) return value.toExponential(1) + "x";
+    if (value < 10) return value.toFixed(2) + "x";
+    if (value < 100) return value.toFixed(1) + "x";
+    return Math.round(value) + "x";
+}
+
+speedValue.textContent = formatSpeed(timeScale);
 
 slider.addEventListener("input", () => {
     const t = slider.value / 100;   //0 → 1
     timeScale = Math.pow(1000, t);  //1x → 1000x
+    speedValue.textContent = formatSpeed(timeScale);
 });
+
+//Zoom in/out buttons
+const zoomInBtn = document.querySelector("#zoom-in");
+const zoomOutBtn = document.querySelector("#zoom-out");
+const zoomDirection = new THREE.Vector3();
+
+function zoomCamera(factor) {
+    zoomDirection.subVectors(camera.position, controls.target);
+    const currentDistance = zoomDirection.length();
+    const newDistance = THREE.MathUtils.clamp(
+        currentDistance * factor,
+        controls.minDistance,
+        controls.maxDistance
+    );
+
+    zoomDirection.setLength(newDistance);
+    camera.position.copy(controls.target).add(zoomDirection);
+    controls.update();
+}
+
+zoomInBtn.addEventListener("click", () => zoomCamera(0.8));
+zoomOutBtn.addEventListener("click", () => zoomCamera(1.25));
 
 //Hides the label in case that it has a planet in front
 const occluders = PLANETS.map((p) => p.object); //sun + planest

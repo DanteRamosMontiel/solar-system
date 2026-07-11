@@ -7,8 +7,24 @@
     <link rel="stylesheet" href="src/styles.css">
 </head>
 <body>
-    <div class="slider-container">
-        <input type="range" id="slider" min="0.000001" max="50" value="1">
+    <div class="controls-panel">
+        <div class="control-group">
+            <div class="control-header">
+                <span class="control-label">Velocidad</span>
+                <span id="speed-value" class="speed-value">1x</span>
+            </div>
+            <input type="range" id="slider" min="0.000001" max="50" value="1">
+        </div>
+
+        <div class="control-divider"></div>
+
+        <div class="control-group">
+            <span class="control-label">Zoom</span>
+            <div class="zoom-buttons">
+                <button id="zoom-out" class="zoom-btn" aria-label="Alejar cámara" type="button">&minus;</button>
+                <button id="zoom-in" class="zoom-btn" aria-label="Acercar cámara" type="button">+</button>
+            </div>
+        </div>
     </div>
     <script type="importmap">
         {
