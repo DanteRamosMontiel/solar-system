@@ -7,6 +7,7 @@ import { createControl } from "./controls.js";
 import { EffectComposer } from "jsm/postprocessing/EffectComposer.js";
 import { RenderPass } from "jsm/postprocessing/RenderPass.js";
 import { UnrealBloomPass } from "jsm/postprocessing/UnrealBloomPass.js";
+import { CSS2DRenderer, CSS2DObject } from "jsm/renderers/CSS2DRenderer.js";
 
 
 //Dimensions
@@ -17,6 +18,27 @@ const h = window.innerHeight;
 const renderer = new THREE.WebGLRenderer({ antialias: true });
 renderer.setSize(w, h)
 document.body.appendChild(renderer.domElement);
+
+//Label Renderer (para los nombres de los planetas)
+const labelRenderer = new CSS2DRenderer();
+labelRenderer.setSize(w, h);
+labelRenderer.domElement.style.position = "absolute";
+labelRenderer.domElement.style.top = "0px";
+labelRenderer.domElement.style.pointerEvents = "none";
+document.body.appendChild(labelRenderer.domElement);
+
+//Helper para crear una etiqueta de texto (nombre de planeta)
+function createPlanetLabel(text) {
+    const div = document.createElement("div");
+    div.className = "planet-label";
+    div.textContent = text;
+
+    return new CSS2DObject(div);
+}
+
+//Para el chequeo de oclusión (ocultar labels tapados por un planeta)
+const raycaster = new THREE.Raycaster();
+const labelEntries = []; // { label, mesh }
 
 //Camera
 const camera = new THREE.PerspectiveCamera(90, w / h, 0.1, 8000);
@@ -112,6 +134,11 @@ const sunSphere = createBasicSphere(scene, sunTexture, 50, 64, 64);
 sunSphere.position.set(0, 0, 0);
 PLANETS[0] = { object: sunSphere, orbitSpeed: 0.000, rotationSpeed: 0.001 };
 
+const sunLabel = createPlanetLabel("Sun");
+sunLabel.position.set(0, 60, 0);
+sunSphere.add(sunLabel);
+labelEntries.push({ label: sunLabel, mesh: sunSphere });
+
 
 //Create a pivot object for each planet
 const PIVOTS = new Array(PLANETS.length - 1);
@@ -133,6 +160,11 @@ for (let i = 0; i < PLANETS_VALUES.length; i++) {
         rotationSpeed: PLANETS_VALUES[i].rotationSpeed
     };
     PLANETS[i + 1].object.position.set(0, 0, PLANETS_VALUES[i].distance);
+
+    const label = createPlanetLabel(PLANETS_VALUES[i].name);
+    label.position.set(0, PLANETS_VALUES[i].radius + 10, 0);
+    PLANETS[i + 1].object.add(label);
+    labelEntries.push({ label, mesh: PLANETS[i + 1].object });
 }
 
 //Saturn ring
@@ -180,15 +212,15 @@ controls.enableDamping = true;
 controls.dampingFactor = 0.05;
 controls.minDistance = 120;
 controls.maxDistance = 3000;
-controls.enablePan = true;
+controls.enablePan = false;
 
 //Resize EventListener
 window.addEventListener("resize", () => {
     camera.aspect = window.innerWidth / window.innerHeight;
     camera.updateProjectionMatrix();
     renderer.setSize(window.innerWidth, window.innerHeight);
-    material.resolution.set(window.innerWidth, window.innerHeight);
     composer.setSize(window.innerWidth, window.innerHeight);
+    labelRenderer.setSize(window.innerWidth, window.innerHeight);
 });
 
 //V = velocity
@@ -196,9 +228,30 @@ let timeScale = 1;
 const slider = document.querySelector("#slider");
 
 slider.addEventListener("input", () => {
-    const t = slider.value / 100;   // 0 → 1
-    timeScale = Math.pow(1000, t);  // 1x → 1000x
+    const t = slider.value / 100;   //0 → 1
+    timeScale = Math.pow(1000, t);  //1x → 1000x
 });
+
+//Hides the label in case that it has a planet in front
+const occluders = PLANETS.map((p) => p.object); //sun + planest
+const labelWorldPos = new THREE.Vector3();
+
+function updateLabelsVisibility() {
+    labelEntries.forEach(({ label, mesh }) => {
+        label.getWorldPosition(labelWorldPos);
+
+        const distToLabel = camera.position.distanceTo(labelWorldPos);
+        const dir = labelWorldPos.clone().sub(camera.position).normalize();
+
+        raycaster.set(camera.position, dir);
+        const hits = raycaster.intersectObjects(occluders, false);
+
+        //If the nearest object in that direction its in front of the label
+        const occluded = hits.length > 0 && hits[0].distance < distToLabel - 1;
+
+        label.element.style.opacity = occluded ? 0 : 1;
+    });
+}
 
 //Animate
 function animate() {
@@ -214,6 +267,8 @@ function animate() {
     asteroidsRingPivot.rotation.y += 0.0001 * timeScale;
     controls.update();
     composer.render();
+    labelRenderer.render(scene, camera);
+    updateLabelsVisibility();
 }
 
 animate();

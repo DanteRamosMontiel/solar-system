@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400..900&display=swap');
+
 /* RESET */
 
 *,
@@ -112,3 +114,22 @@
         0 0 18px #4f7cff,
         0 0 30px #00d4ff55;
 }
+
+.planet-label {
+    color: #d4ecff;
+    font-family: "Orbitron", sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 300;
+    font-style: normal;
+    font-weight: 400;
+    font-style: normal;
+    font-size: clamp(13px, 1.4vw, 20px);
+    text-shadow:
+        0 0 3px rgba(0,0,0,.9),
+        0 0 6px rgba(0,0,0,.9),
+        0 1px 2px rgba(0,0,0,1);
+    user-select: none;
+    white-space: nowrap;
+    transition: opacity 0.15s linear;
+}
+
